@@ -43,12 +43,12 @@ const AssetRegister = () => {
   }, []);
 
   useEffect(() => {
-    if (mainCategory === "Electronic items") {
-      fetchTypes();
+    if (mainCategory) {
+      filterTypes();
     } else {
-      setTypes([]); // Clear types if another category is selected
+      setTypes([]); // Reset types if no main category is selected
     }
-  }, [mainCategory]);
+  }, [mainCategory, categories]);
 
   const fetchCategories = async () => {
     try {
@@ -59,12 +59,14 @@ const AssetRegister = () => {
     }
   };
 
-  const fetchTypes = async () => {
-    try {
-      const response = await axios.get(`http://localhost:8000/api/categories/getTypes?category=${mainCategory}`);
-      setTypes(response.data.types);
-    } catch (error) {
-      console.error("Error fetching types:", error);
+  const filterTypes = () => {
+    if (mainCategory) {
+      const filtered = categories
+        .filter((category) => category.category === mainCategory)
+        .map((category) => category.types)
+        .flat();
+
+      setTypes(filtered);
     }
   };
 
@@ -177,11 +179,11 @@ const AssetRegister = () => {
             ))}
           </select>
 
-          {mainCategory  && (
+          {mainCategory && (
             <select value={type} onChange={(e) => setType(e.target.value)}>
               <option value="">Select Type</option>
-              {types.map((t) => (
-                <option key={t._id} value={t.types}>{t.types}</option>
+              {types.map((t, index) => (
+                <option key={index} value={t}>{t}</option>
               ))}
             </select>
           )}
