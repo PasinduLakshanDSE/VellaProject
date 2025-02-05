@@ -17,7 +17,10 @@ const userRoute = require("./Routes/AdminRoute.jsx");
 //const userLoginRoute = require("./Routes/UserLoginRoute.jsx") // Import the new Service route
 
 const categoryRoute = require("./Routes/CategoryRoute.jsx");
+
+const AssetDetails = require("./Routes/AssetRegisterRoute.jsx");
 app.use("/api/categories", categoryRoute);
+app.use("/api/AssetRegisterDetails", AssetDetails);
 
 
 

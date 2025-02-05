@@ -144,7 +144,7 @@ const AssetRegister = () => {
     }
   }, [trackingId]);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!name || !company || !department || !mainCategory || !assetName || !assetUpdateDate || !type) {
       alert("Please fill in all fields before submitting.");
       return;
@@ -174,7 +174,7 @@ const AssetRegister = () => {
     };
 
     console.log("Asset Data: ", assetData);
-    alert("Asset Registered Successfully!");
+    
 
     setCompany("");
     setDepartment("");
@@ -187,7 +187,33 @@ const AssetRegister = () => {
     setTrackingId("");
     setSpecialNote("");
 
+    try {
+      const response = await axios.post("http://localhost:8000/api/AssetRegisterDetails", assetData);
+      alert(response.data.message); // Success message
+      // Reset form
+      setCompany("");
+      setDepartment("");
+      setMainCategory("");
+      setType("");
+      setAssetName("");
+      setAssetUpdateDate("");
+      setSerialNumber("");
+      setQrCodeData(null);
+      setTrackingId("");
+      setSpecialNote("");;
+
+    } catch (error) {
+      console.error("Error submitting data:", error);
+      alert("Error creating category. Please try again.");
+    }
+    
+
   };
+
+  
+
+
+  
 
   const handleDownloadCombinedImage = async () => {
     try {
