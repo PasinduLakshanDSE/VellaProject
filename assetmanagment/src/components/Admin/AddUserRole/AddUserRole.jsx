@@ -143,8 +143,8 @@ const AddUsersRole = () => {
 
                    
 
-                    <button type="button" onClick={handleReset}>Reset</button>
-                    <button type="submit">Submit</button>
+                    <button  className ="btn1" type="button" onClick={handleReset}>Reset</button>
+                    <button className ="btn2" type="submit">Submit</button>
                 </form>
             </fieldset>
         </div>

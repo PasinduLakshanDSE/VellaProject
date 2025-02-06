@@ -28,7 +28,7 @@ const Categorization = () => {
       case "Stationery":
         return ["Pen", "Notebook", "Marker", "Stapler", "Other"];
         case "Laundry & Linen":
-          return ["towels", "bed sheets", "pillow covers"];
+          return ["towels", "bed sheets", "pillow covers","Other"];
           case "Electrical items":
             return ["Breaker", "Wall Socket", "Holders", "Voltage Tester", "Bell Switch","Fuse","Other"];
             case "Outdoor & Garden Equipment":

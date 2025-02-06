@@ -20,6 +20,8 @@ const AssetRegister = () => {
   const [qrCodeData, setQrCodeData] = useState(null);
   const [trackingId, setTrackingId] = useState("");
   const [specialNote, setSpecialNote] = useState("");
+  const [customType, setCustomType] = useState("");
+
 
   const qrCodeContainerRef = useRef();
 
@@ -134,7 +136,7 @@ const AssetRegister = () => {
         department,
         mainCategory,
         assetName,
-        type,
+        type: type === "Other" ? customType : type,
         assetUpdateDate,
         serialNumber: mainCategory === "Electronic items" ? serialNumber : null,
         trackingId,
@@ -165,7 +167,7 @@ const AssetRegister = () => {
       company,
       department,
       mainCategory,
-      type,
+      type: type === "Other" ? customType : type,
       assetName,
       assetUpdateDate,
       serialNumber: mainCategory === "Electronic items" ? serialNumber : null,
@@ -186,6 +188,7 @@ const AssetRegister = () => {
     setQrCodeData(null);
     setTrackingId("");
     setSpecialNote("");
+    setCustomType("");
 
     try {
       const response = await axios.post("http://localhost:8000/api/AssetRegisterDetails", assetData);
@@ -200,7 +203,8 @@ const AssetRegister = () => {
       setSerialNumber("");
       setQrCodeData(null);
       setTrackingId("");
-      setSpecialNote("");;
+      setSpecialNote("");
+      setCustomType("");
 
     } catch (error) {
       console.error("Error submitting data:", error);
@@ -268,9 +272,20 @@ const AssetRegister = () => {
               <option value="">Select Type</option>
               {types.map((t, index) => (
                 <option key={index} value={t}>{t}</option>
+               
               ))}
+              <option value="Other">Other</option>
             </select>
           )}
+         
+ {type === "Other" && (
+  <input
+    type="text"
+    value={customType}
+    onChange={(e) => setCustomType(e.target.value)}
+    placeholder="Enter Custom Type"
+  />
+)}
 
           <input
             type="text"

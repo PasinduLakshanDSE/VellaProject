@@ -74,6 +74,36 @@ body {
     width: 40%;
     font-size: 16px;
   }
+
+  .btn1{
+    background-color: #bb622f;
+    
+      padding: 10px;
+      border-radius: 10px;
+      margin: 15px;
+      border: none;
+      color: white;
+      cursor: pointer;
+      
+      width: 40%;
+      font-size: 16px;
+    
+  }
+ 
+  .btn2{
+    background-color: #030f50;
+    
+      padding: 10px;
+      border-radius: 10px;
+      margin: 15px;
+      border: none;
+      color: white;
+      cursor: pointer;
+      
+      width: 40%;
+      font-size: 16px;
+    
+  }
   textarea {
     resize: none;
     width: 98%;

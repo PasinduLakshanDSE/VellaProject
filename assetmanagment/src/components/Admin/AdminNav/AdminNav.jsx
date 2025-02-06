@@ -63,6 +63,12 @@ const AdminNavBar = () => {
           </div>
           <div className="nav-button">
             <i className="fas fa-user"></i>
+            <a href="/category" className="nav-link">
+            Asset Details
+            </a>
+          </div>
+          <div className="nav-button">
+            <i className="fas fa-user"></i>
             <a href="/Users" className="nav-link">
               Users
             </a>
