@@ -1,5 +1,6 @@
 const express = require("express");
 const AssetDetails = require("../Module/AssetRegisterModule.jsx"); // Updated path
+const AssetRegisterDetails = require("../Module/AssetRegisterModule.jsx");
 
 const router = express.Router();
 
@@ -36,6 +37,17 @@ router.post("/", async (req, res) => {
     res.status(500).json({ error: "Server error. Unable to save Asset Detailsy." });
   }
 });
+
+
+router.get("/getAssetDetails",async(req,res)=>{
+  try{
+    const asset = await AssetRegisterDetails.find();
+    res.status(200).json(asset);
+  }catch(error){
+    console.error("Error fetching asset details:", error);
+    res.status(500).json({ error: "Server error. Unable to retrieve assets." });
+  }
+})
 
 
 

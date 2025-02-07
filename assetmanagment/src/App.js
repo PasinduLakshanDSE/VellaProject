@@ -17,6 +17,8 @@ import Users from "./components/Admin/Users/Users";
 import AssetRegister from "./components/Admin/AssetRegistration/AssetRegister";
 import Categorization from "./components/Admin/AssetCategorization/Assetcategorization";
 
+import AssetDetails from "./components/Admin/AssetDetails/AssetDetails";
+
 //import Users from "./components/Users/Users";
 
 
@@ -36,6 +38,7 @@ function App() {
         <Route path="/Users"  element={<Users/>}/>
         <Route path="/AssetRegister" element={<AssetRegister/>}/>
         <Route path="/category" element={<Categorization/>}/>
+        <Route path="/AssetDetails" element={<AssetDetails/>}/>
       </Routes>
     </div>
   );
