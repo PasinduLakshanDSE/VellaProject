@@ -13,7 +13,8 @@ router.post("/", async (req, res) => {
     assetUpdateDate,
     serialNumber,
     trackingId,
-    specialNote, } = req.body;
+    specialNote, 
+    computerComponents,} = req.body;
 
   
   try {
@@ -26,7 +27,8 @@ router.post("/", async (req, res) => {
         assetUpdateDate,
         serialNumber,
         trackingId,
-        specialNote});
+        specialNote,
+        computerComponents});
     const savedAssetDetails = await newDetails.save();
     res.status(201).json({ message: "Asset Details save successfully!", AssetDetails: savedAssetDetails });
   } catch (error) {

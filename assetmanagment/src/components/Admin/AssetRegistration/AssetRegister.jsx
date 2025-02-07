@@ -21,7 +21,13 @@ const AssetRegister = () => {
   const [trackingId, setTrackingId] = useState("");
   const [specialNote, setSpecialNote] = useState("");
   const [customType, setCustomType] = useState("");
-
+  const [computerComponents, setComputerComponents] = useState(/*{
+    fullPack: false,
+    monitor: false,
+    cpu: false,
+    mouse: false,
+    keyboard: false,
+  }*/"");
 
   const qrCodeContainerRef = useRef();
 
@@ -44,11 +50,8 @@ const AssetRegister = () => {
   }, []);
 
   useEffect(() => {
-    if (mainCategory) {
-      filterTypes();
-    } else {
-      setTypes([]);
-    }
+    if (mainCategory) filterTypes();
+    else setTypes([]);
   }, [mainCategory, categories]);
 
   const fetchCategories = async () => {
@@ -61,56 +64,28 @@ const AssetRegister = () => {
   };
 
   const filterTypes = () => {
-    if (mainCategory) {
-      const filtered = categories
-        .filter((category) => category.category === mainCategory)
-        .map((category) => category.types)
-        .flat();
-      setTypes(filtered);
-    }
+    const filtered = categories
+      .filter((category) => category.category === mainCategory)
+      .map((category) => category.types)
+      .flat();
+    setTypes(filtered);
   };
 
   const generateTrackingId = () => {
-    const companyShortCodes = {
-      Vella: "VE",
-      "98 Acers": "98",
-      "Ravana Pool Club": "RPC",
-      "Flying Ravana": "FR",
-      "Le Maas Tota": "LMT",
-      "Tea Factory": "TF",
-    };
+    const companyCodes = { Vella: "VE", "98 Acers": "98", "Ravana Pool Club": "RPC", "Flying Ravana": "FR", "Le Maas Tota": "LMT", "Tea Factory": "TF" };
+    const departmentCodes = { IT: "IT", HR: "HR", Kitchen: "KT", Store: "ST", "Front Office": "FO", Account: "AC", Audit: "AU" };
 
-    const departmentShortCodes = {
-      IT: "IT",
-      HR: "HR",
-      Kitchen: "KT",
-      Store: "ST",
-      "Front Office": "FO",
-      Account: "AC",
-      Audit: "AU",
-    };
+    const companyCode = companyCodes[company] || "XX";
+    const departmentCode = departmentCodes[department] || "XX";
+    const serialSuffix = mainCategory === "Electronic items" && serialNumber ? serialNumber.slice(-4) : "";
+    const randomNum = `${new Date().toISOString().slice(2, 10).replace(/-/g, "")}${String(Math.floor(Math.random() * 100)).padStart(2, "0")}`;
 
-    const companyCode = companyShortCodes[company] || "XX";
-    const departmentCode = departmentShortCodes[department] || "XX";
-    let serialSuffix = "";
+    return serialNumber ? `${companyCode}-${departmentCode}-${serialSuffix}` : `${companyCode}-${departmentCode}-${randomNum}`;
+  };
 
-    if (mainCategory === "Electronic items" && serialNumber) {
-      serialSuffix = serialNumber.slice(-4); // Get last 4 characters of Serial Number
-    }
-
-    const date = new Date();
-    const yearLast2 = String(date.getFullYear()).slice(-2); // Last 2 digits of the year
-    const month = String(date.getMonth() + 1).padStart(2, '0'); // Month (2 digits)
-    const day = String(date.getDate()).padStart(2, '0'); // Day (2 digits)
-    const Num = String(Math.floor(Math.random() * 100)).padStart(2, '0'); // 2 random digits
-
-    const randomNum = `${yearLast2}${month}${day}${Num}`;
-
-    if (serialNumber) {
-      return `${companyCode}-${departmentCode}-${serialSuffix}`;
-    }
-
-    return `${companyCode}-${departmentCode}-${randomNum}`;
+  const handleComponentChange = (e) => {
+    const { name, checked } = e.target;
+    setComputerComponents((prev) => ({ ...prev, [name]: checked }));
   };
 
   const handleGenerateQR = () => {
@@ -124,8 +99,7 @@ const AssetRegister = () => {
       return;
     }
 
-    const uniqueTrackingId = generateTrackingId();
-    setTrackingId(uniqueTrackingId);
+    setTrackingId(generateTrackingId());
   };
 
   useEffect(() => {
@@ -140,11 +114,26 @@ const AssetRegister = () => {
         assetUpdateDate,
         serialNumber: mainCategory === "Electronic items" ? serialNumber : null,
         trackingId,
+        computerComponents,
+        specialNote,
       });
-
       setQrCodeData(qrData);
     }
   }, [trackingId]);
+
+  const handleDownloadCombinedImage = async () => {
+    try {
+      if (!qrCodeContainerRef.current) return;
+      const canvas = await html2canvas(qrCodeContainerRef.current);
+      const link = document.createElement("a");
+      link.download = "QRCodeWithTrackingID.png";
+      link.href = canvas.toDataURL("image/png");
+      link.click();
+    } catch (error) {
+      console.error("Failed to download the QR code image:", error);
+      alert("Error occurred while downloading the QR code. Please try again.");
+    }
+  };
 
   const handleSubmit = async () => {
     if (!name || !company || !department || !mainCategory || !assetName || !assetUpdateDate || !type) {
@@ -152,47 +141,23 @@ const AssetRegister = () => {
       return;
     }
 
-    if (mainCategory === "Electronic items" && !serialNumber) {
-      alert("Please enter a Serial Number for Electronics.");
-      return;
-    }
-
-    if (!trackingId || !qrCodeData) {
-      alert("Please generate a Tracking ID and QR Code before submitting.");
-      return;
-    }
-
-    const assetData = {
-      name,
-      company,
-      department,
-      mainCategory,
-      type: type === "Other" ? customType : type,
-      assetName,
-      assetUpdateDate,
-      serialNumber: mainCategory === "Electronic items" ? serialNumber : null,
-      trackingId,
-      specialNote,
-    };
-
-    console.log("Asset Data: ", assetData);
-    
-
-    setCompany("");
-    setDepartment("");
-    setMainCategory("");
-    setType("");
-    setAssetName("");
-    setAssetUpdateDate("");
-    setSerialNumber("");
-    setQrCodeData(null);
-    setTrackingId("");
-    setSpecialNote("");
-    setCustomType("");
-
     try {
+      const assetData = {
+        name,
+        company,
+        department,
+        mainCategory,
+        type: type === "Other" ? customType : type,
+        assetName,
+        assetUpdateDate,
+        serialNumber: mainCategory === "Electronic items" ? serialNumber : null,
+        trackingId,
+        specialNote,
+        computerComponents,
+      };
+
       const response = await axios.post("http://localhost:8000/api/AssetRegisterDetails", assetData);
-      alert(response.data.message); // Success message
+      alert(response.data.message);
       // Reset form
       setCompany("");
       setDepartment("");
@@ -205,35 +170,12 @@ const AssetRegister = () => {
       setTrackingId("");
       setSpecialNote("");
       setCustomType("");
-
+      setComputerComponents(/*{ fullPack: false, monitor: false, cpu: false, mouse: false, keyboard: false }*/"");
     } catch (error) {
       console.error("Error submitting data:", error);
-      alert("Error creating category. Please try again.");
-    }
-    
-
-  };
-
-  
-
-
-  
-
-  const handleDownloadCombinedImage = async () => {
-    try {
-      if (!qrCodeContainerRef.current) return;
-
-      const canvas = await html2canvas(qrCodeContainerRef.current);
-      const link = document.createElement("a");
-      link.download = "QRCodeWithTrackingID.png";
-      link.href = canvas.toDataURL("image/png");
-      link.click();
-    } catch (error) {
-      console.error("Failed to download the QR code image:", error);
-      alert("Error occurred while downloading the QR code. Please try again.");
+      alert("Error creating asset. Please try again.");
     }
   };
-
   return (
     <div className="asset-register">
       <div className="form-container">
@@ -286,6 +228,22 @@ const AssetRegister = () => {
     placeholder="Enter Custom Type"
   />
 )}
+
+{type === "Computer" && (
+            <div className="computer-options">
+              <div  className="computer-options1"><div>
+              <label className="l"><input type="checkbox" name="fullSet"onChange={handleComponentChange} /> Full Set</label>
+              <label className="l"><input type="checkbox" name="monitor"  onChange={handleComponentChange} /> Monitor</label>
+             <label className="l"><input type="checkbox" name="cpu"  onChange={handleComponentChange} /> CPU</label>
+             </div><div className="computer-options2" ><label className="l"><input type="checkbox" name="mouse" onChange={handleComponentChange} /> Mouse</label>
+              <label className="l"><input type="checkbox" name="keyboard"  onChange={handleComponentChange} /> Keyboard</label>
+              <label className="l"><input type="checkbox" name="MotherBoard"  onChange={handleComponentChange} /> MotherBoard</label>
+              </div><div  className="computer-options3"><label className="l"><input type="checkbox" name="ram"  onChange={handleComponentChange} /> Ram</label>
+              <label className="l"><input type="checkbox" name="powersupply"  onChange={handleComponentChange} /> Power Supply</label>
+              
+              <label className="l"><input type="checkbox" name="processor"  onChange={handleComponentChange} /> Processor</label>
+            </div></div></div>
+          )}
 
           <input
             type="text"
