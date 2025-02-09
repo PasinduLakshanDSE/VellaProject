@@ -51,13 +51,7 @@ const AsetRegisterSchema = mongoose.Schema(
       computerComponents: { 
         type: Object, 
         required: false, 
-        /*default: {
-          fullPack: false,
-          monitor: false,
-          cpu: false,
-          mouse: false,
-          keyboard: false,
-        }*/
+        
       }
     
   },

@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import "./assetDetails.css"
 
 const AssetDetails = () => {
     const [AssetRegisterDetails, setAssetRegisterDetails] = useState([]);
     const [searchQuery, setSearchQuery] = useState("");  // First search field
     const [searchQuery1, setSearchQuery1] = useState(""); // Second search field
+    const [searchQuery2, setSearchQuery2] = useState(""); // Second search field
 
     useEffect(() => {
         axios.get("http://localhost:8000/api/AssetRegisterDetails/getAssetDetails")
@@ -12,21 +14,69 @@ const AssetDetails = () => {
             .catch(error => console.error("Error fetching asset details:", error));
     }, []);
 
-    // Filter assets based on searchQuery (first input field)
-    const filteredAssets = AssetRegisterDetails.filter(asset =>
-        (asset.name?.toLowerCase() || "").includes(searchQuery.toLowerCase()) ||
-        (asset.company?.toLowerCase() || "").includes(searchQuery.toLowerCase()) ||
-        (asset.mainCategory?.toLowerCase() || "").includes(searchQuery.toLowerCase()) ||
-        (asset.department?.toLowerCase() || "").includes(searchQuery.toLowerCase()) ||
-        (asset.type?.toLowerCase() || "").includes(searchQuery.toLowerCase()) ||
-        (asset.assetName?.toLowerCase() || "").includes(searchQuery.toLowerCase()) ||
-        (asset.serialNumber?.toLowerCase() || "").includes(searchQuery.toLowerCase()) ||
-        (asset.trackingId?.toLowerCase() || "").includes(searchQuery.toLowerCase())
-    );
+    const filteredAssets = AssetRegisterDetails.filter(asset => {
+        const matchesFirstQuery =
+            (asset.name?.toLowerCase() || "").includes(searchQuery.toLowerCase()) ||
+            (asset.company?.toLowerCase() || "").includes(searchQuery.toLowerCase()) ||
+            (asset.mainCategory?.toLowerCase() || "").includes(searchQuery.toLowerCase()) ||
+            (asset.department?.toLowerCase() || "").includes(searchQuery.toLowerCase()) ||
+            (asset.type?.toLowerCase() || "").includes(searchQuery.toLowerCase()) ||
+            (asset.assetName?.toLowerCase() || "").includes(searchQuery.toLowerCase()) ||
+            (asset.serialNumber?.toLowerCase() || "").includes(searchQuery.toLowerCase()) ||
+            (asset.trackingId?.toLowerCase() || "").includes(searchQuery.toLowerCase()) ||
+            (asset.computerComponents &&
+                Object.keys(asset.computerComponents)
+                    .some(key => key.toLowerCase().includes(searchQuery.toLowerCase()))
+            );
+    
+        const matchesSecondQuery =
+            (asset.name?.toLowerCase() || "").includes(searchQuery1.toLowerCase()) ||
+            (asset.company?.toLowerCase() || "").includes(searchQuery1.toLowerCase()) ||
+            (asset.mainCategory?.toLowerCase() || "").includes(searchQuery1.toLowerCase()) ||
+            (asset.department?.toLowerCase() || "").includes(searchQuery1.toLowerCase()) ||
+            (asset.type?.toLowerCase() || "").includes(searchQuery1.toLowerCase()) ||
+            (asset.assetName?.toLowerCase() || "").includes(searchQuery1.toLowerCase()) ||
+            (asset.serialNumber?.toLowerCase() || "").includes(searchQuery1.toLowerCase()) ||
+            (asset.trackingId?.toLowerCase() || "").includes(searchQuery1.toLowerCase()) ||
+            (asset.computerComponents &&
+                Object.keys(asset.computerComponents)
+                    .some(key => key.toLowerCase().includes(searchQuery1.toLowerCase()))
+            );
+    
+        const matchesThirdQuery =
+            (asset.name?.toLowerCase() || "").includes(searchQuery2.toLowerCase()) ||
+            (asset.company?.toLowerCase() || "").includes(searchQuery2.toLowerCase()) ||
+            (asset.mainCategory?.toLowerCase() || "").includes(searchQuery2.toLowerCase()) ||
+            (asset.department?.toLowerCase() || "").includes(searchQuery2.toLowerCase()) ||
+            (asset.type?.toLowerCase() || "").includes(searchQuery2.toLowerCase()) ||
+            (asset.assetName?.toLowerCase() || "").includes(searchQuery2.toLowerCase()) ||
+            (asset.serialNumber?.toLowerCase() || "").includes(searchQuery2.toLowerCase()) ||
+            (asset.trackingId?.toLowerCase() || "").includes(searchQuery2.toLowerCase()) ||
+            (asset.computerComponents &&
+                Object.keys(asset.computerComponents)
+                    .some(key => key.toLowerCase().includes(searchQuery2.toLowerCase()))
+            );
+    
+        // Apply logic: If all fields are filled, all must match; otherwise, match based on input
+        if (searchQuery && searchQuery1 && searchQuery2) {
+            return matchesFirstQuery && matchesSecondQuery && matchesThirdQuery;
+        } else if (searchQuery && searchQuery1) {
+            return matchesFirstQuery && matchesSecondQuery;
+        } else if (searchQuery && searchQuery2) {
+            return matchesFirstQuery && matchesThirdQuery;
+        } else if (searchQuery1 && searchQuery2) {
+            return matchesSecondQuery && matchesThirdQuery;
+        } else {
+            return matchesFirstQuery || matchesSecondQuery || matchesThirdQuery;
+        }
+    });
+    
+    
 
     return (
         <div className="row">
             <div className="col-md-12">
+                <h1 className="assethead">Asset Details</h1>
                 {/* First Search Input */}
                 <input
                     type="text"
@@ -43,6 +93,14 @@ const AssetDetails = () => {
                     placeholder="Search by another parameter..."
                     value={searchQuery1}
                     onChange={(e) => setSearchQuery1(e.target.value)}
+                />
+                 {/* Third Search Input */}
+                 <input
+                    type="text"
+                    className="form-control mb-3"
+                    placeholder="Search by another parameter..."
+                    value={searchQuery2}
+                    onChange={(e) => setSearchQuery2(e.target.value)}
                 />
 
                 <table className="table table-bordered table-light">

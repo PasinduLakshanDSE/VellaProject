@@ -89,6 +89,10 @@ body {
       font-size: 16px;
     
   }
+  .userhead{
+    font-size: 25px;
+    font-family: "bold";
+  }
  
   .btn2{
     background-color: #030f50;

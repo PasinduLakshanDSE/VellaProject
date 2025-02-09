@@ -179,7 +179,7 @@ const AssetRegister = () => {
   return (
     <div className="asset-register">
       <div className="form-container">
-        <h2>Asset Registration</h2>
+        <h2 className="registerhead">Asset Registration</h2>
         <div className="input-box">
           <input
             type="text"

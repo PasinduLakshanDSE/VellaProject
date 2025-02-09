@@ -83,7 +83,7 @@ const AddUsersRole = () => {
 
     return (
         <div className="Users">
-            <h1>User Registration</h1>
+            <h1 className='userhead'>User Registration</h1>
             <fieldset>
                 <form onSubmit={handleSubmit}>
                     <label>First Name*</label>

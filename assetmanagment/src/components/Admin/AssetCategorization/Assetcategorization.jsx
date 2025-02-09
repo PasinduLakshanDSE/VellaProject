@@ -81,7 +81,7 @@ const Categorization = () => {
     <div className="body">
       <div className="asset-categorization">
         <div className="form-container">
-          <h2>Asset Categorization</h2>
+          <h2 className="catergoryhead">Asset Categorization</h2>
           <form onSubmit={handleSubmit}>
             <div className="input-box">
               {/* Category Dropdown */}

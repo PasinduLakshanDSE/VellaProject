@@ -140,6 +140,10 @@ input[type="date"] {
   
   margin-left: 50px;
 }
+.registerhead{
+  
+  font-family: "bold";
+}
 
 /* Responsive Design */
 @media (max-width: 768px) {

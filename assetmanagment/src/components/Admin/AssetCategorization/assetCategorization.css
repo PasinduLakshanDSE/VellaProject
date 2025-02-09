@@ -25,6 +25,10 @@
     width: 500px;
     max-width: 90%;
   }
+  .catergoryhead{
+    
+    font-family: "bold";
+  }
   
   /* Form heading */
   .form-container h2 {
