@@ -21,13 +21,15 @@ const AssetRegister = () => {
   const [trackingId, setTrackingId] = useState("");
   const [specialNote, setSpecialNote] = useState("");
   const [customType, setCustomType] = useState("");
-  const [computerComponents, setComputerComponents] = useState(/*{
+  /*const [computerComponents, setComputerComponents] = useState(/*{
     fullPack: false,
     monitor: false,
     cpu: false,
     mouse: false,
     keyboard: false,
-  }*/"");
+  };*/
+  const [computerComponents, setComputerComponents] = useState("");
+
 
   const qrCodeContainerRef = useRef();
 
@@ -84,9 +86,15 @@ const AssetRegister = () => {
   };
 
   const handleComponentChange = (e) => {
-    const { name, checked } = e.target;
-    setComputerComponents((prev) => ({ ...prev, [name]: checked }));
+    const value = e.target.value;
+    if (value === "fullSet") {
+      setComputerComponents("fullSet");
+    } else {
+      setComputerComponents(value);
+    }
   };
+  
+  
 
   const handleGenerateQR = () => {
     if (!name || !company || !department || !mainCategory || !assetName || !assetUpdateDate || !type) {
@@ -176,6 +184,16 @@ const AssetRegister = () => {
       alert("Error creating asset. Please try again.");
     }
   };
+
+
+
+
+  
+
+
+
+
+
   return (
     <div className="asset-register">
       <div className="form-container">
@@ -230,20 +248,53 @@ const AssetRegister = () => {
 )}
 
 {type === "Computer" && (
-            <div className="computer-options">
-              <div  className="computer-options1"><div>
-              <label className="l"><input type="checkbox" name="fullSet"onChange={handleComponentChange} /> Full Set</label>
-              <label className="l"><input type="checkbox" name="monitor"  onChange={handleComponentChange} /> Monitor</label>
-             <label className="l"><input type="checkbox" name="cpu"  onChange={handleComponentChange} /> CPU</label>
-             </div><div className="computer-options2" ><label className="l"><input type="checkbox" name="mouse" onChange={handleComponentChange} /> Mouse</label>
-              <label className="l"><input type="checkbox" name="keyboard"  onChange={handleComponentChange} /> Keyboard</label>
-              <label className="l"><input type="checkbox" name="MotherBoard"  onChange={handleComponentChange} /> MotherBoard</label>
-              </div><div  className="computer-options3"><label className="l"><input type="checkbox" name="ram"  onChange={handleComponentChange} /> Ram</label>
-              <label className="l"><input type="checkbox" name="powersupply"  onChange={handleComponentChange} /> Power Supply</label>
-              
-              <label className="l"><input type="checkbox" name="processor"  onChange={handleComponentChange} /> Processor</label>
-            </div></div></div>
-          )}
+  <div className="computer-options">
+    <label className="l">
+      <input
+        type="radio"
+        name="computerComponent"
+        value="fullSet"
+        onChange={handleComponentChange}
+        checked={computerComponents === "fullSet"}
+      /> Full Set
+    </label>
+
+    {/* Show full set components only if "Full Set" is selected */}
+    {computerComponents === "fullSet" && (
+      <div className="fullset-components">
+        <label className="l">
+          <input type="checkbox" checked readOnly /> CPU
+        </label>
+        <label className="l">
+          <input type="checkbox" checked readOnly /> Monitor
+        </label>
+        <label className="l">
+          <input type="checkbox" checked readOnly /> Mouse
+        </label>
+        <label className="l">
+          <input type="checkbox" checked readOnly /> Keyboard
+        </label>
+      </div>
+    )}
+
+    
+        <label className="l">
+          <input type="radio" name="computerComponent" value="monitor" onChange={handleComponentChange} checked={computerComponents === "monitor"} /> Monitor
+        </label>
+        <label className="l">
+          <input type="radio" name="computerComponent" value="cpu" onChange={handleComponentChange} checked={computerComponents === "cpu"} /> CPU
+        </label>
+        <label className="l">
+          <input type="radio" name="computerComponent" value="mouse" onChange={handleComponentChange} checked={computerComponents === "mouse"} /> Mouse
+        </label>
+        <label className="l">
+          <input type="radio" name="computerComponent" value="keyboard" onChange={handleComponentChange} checked={computerComponents === "keyboard"} /> Keyboard
+        </label>
+      
+    
+  </div>
+)}
+
 
           <input
             type="text"

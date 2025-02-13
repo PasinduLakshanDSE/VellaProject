@@ -28,7 +28,7 @@ const AssetDetails = () => {
                 Object.keys(asset.computerComponents)
                     .some(key => key.toLowerCase().includes(searchQuery.toLowerCase()))
             );
-    
+
         const matchesSecondQuery =
             (asset.name?.toLowerCase() || "").includes(searchQuery1.toLowerCase()) ||
             (asset.company?.toLowerCase() || "").includes(searchQuery1.toLowerCase()) ||
@@ -42,7 +42,7 @@ const AssetDetails = () => {
                 Object.keys(asset.computerComponents)
                     .some(key => key.toLowerCase().includes(searchQuery1.toLowerCase()))
             );
-    
+
         const matchesThirdQuery =
             (asset.name?.toLowerCase() || "").includes(searchQuery2.toLowerCase()) ||
             (asset.company?.toLowerCase() || "").includes(searchQuery2.toLowerCase()) ||
@@ -56,7 +56,7 @@ const AssetDetails = () => {
                 Object.keys(asset.computerComponents)
                     .some(key => key.toLowerCase().includes(searchQuery2.toLowerCase()))
             );
-    
+
         // Apply logic: If all fields are filled, all must match; otherwise, match based on input
         if (searchQuery && searchQuery1 && searchQuery2) {
             return matchesFirstQuery && matchesSecondQuery && matchesThirdQuery;
@@ -70,8 +70,8 @@ const AssetDetails = () => {
             return matchesFirstQuery || matchesSecondQuery || matchesThirdQuery;
         }
     });
-    
-    
+
+
 
     return (
         <div className="row">
@@ -94,8 +94,8 @@ const AssetDetails = () => {
                     value={searchQuery1}
                     onChange={(e) => setSearchQuery1(e.target.value)}
                 />
-                 {/* Third Search Input */}
-                 <input
+                {/* Third Search Input */}
+                <input
                     type="text"
                     className="form-control mb-3"
                     placeholder="Search by another parameter..."
@@ -133,14 +133,8 @@ const AssetDetails = () => {
                                     <td>{asset.serialNumber}</td>
                                     <td>{asset.trackingId}</td>
                                     <td>{asset.specialNote}</td>
-                                    <td>
-                                        {asset.computerComponents
-                                            ? Object.entries(asset.computerComponents)
-                                                .filter(([key, value]) => value === true)
-                                                .map(([key]) => key)
-                                                .join(", ") || "No Components"
-                                            : "No Components"}
-                                    </td>
+                                    <td>{asset.
+                                        computerComponents}</td>
                                 </tr>
                             ))
                         ) : (
