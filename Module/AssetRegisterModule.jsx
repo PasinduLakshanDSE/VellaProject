@@ -52,7 +52,23 @@ const AsetRegisterSchema = mongoose.Schema(
         type: Object, 
         required: false, 
         
-      }
+      },
+      CPUassetName: {
+        type: String,
+        required: false,
+      }, 
+      MoniterassetName: {
+        type: String,
+        required: false,
+      }, 
+      MouseassetName: {
+        type: String,
+        required: false,
+      },
+      KeyboardassetName: {
+        type: String,
+        required: false,
+      },
     
   },
   { timestamps: true }

@@ -15,8 +15,17 @@ const AssetRegister = () => {
   const [categories, setCategories] = useState([]);
   const [types, setTypes] = useState([]);
   const [assetName, setAssetName] = useState("");
+  const [CPUassetName, setCPUAssetName] = useState("");
+  const [MoniterassetName, setMoniterAssetName] = useState("");
+  const [MouseassetName, setMouseAssetName] = useState("");
+  const [KeyboardassetName, setKeyboardAssetName] = useState("");
   const [assetUpdateDate, setAssetUpdateDate] = useState("");
   const [serialNumber, setSerialNumber] = useState("");
+  const [CPUserialNumber, setCPUSerialNumber] = useState("");
+  const [MoniterserialNumber, setMoniterSerialNumber] = useState("");
+  const [MouseserialNumber, setMouseSerialNumber] = useState("");
+  const [KeyboardserialNumber, setKeyboardSerialNumber] = useState("");
+  //const [serialNumber, setSerialNumber] = useState("");
   const [qrCodeData, setQrCodeData] = useState(null);
   const [trackingId, setTrackingId] = useState("");
   const [specialNote, setSpecialNote] = useState("");
@@ -73,16 +82,18 @@ const AssetRegister = () => {
     setTypes(filtered);
   };
 
-  const generateTrackingId = () => {
+  const generateTrackingId = (serialNumber) => {
     const companyCodes = { Vella: "VE", "98 Acers": "98", "Ravana Pool Club": "RPC", "Flying Ravana": "FR", "Le Maas Tota": "LMT", "Tea Factory": "TF" };
     const departmentCodes = { IT: "IT", HR: "HR", Kitchen: "KT", Store: "ST", "Front Office": "FO", Account: "AC", Audit: "AU" };
 
     const companyCode = companyCodes[company] || "XX";
     const departmentCode = departmentCodes[department] || "XX";
     const serialSuffix = mainCategory === "Electronic items" && serialNumber ? serialNumber.slice(-4) : "";
+    
+
     const randomNum = `${new Date().toISOString().slice(2, 10).replace(/-/g, "")}${String(Math.floor(Math.random() * 100)).padStart(2, "0")}`;
 
-    return serialNumber ? `${companyCode}-${departmentCode}-${serialSuffix}` : `${companyCode}-${departmentCode}-${randomNum}`;
+    return  serialNumber ? `${companyCode}-${departmentCode}-${serialSuffix}` : `${companyCode}-${departmentCode}-${randomNum}`;
   };
 
   const handleComponentChange = (e) => {
@@ -94,22 +105,81 @@ const AssetRegister = () => {
     }
   };
   
-  
-
   const handleGenerateQR = () => {
-    if (!name || !company || !department || !mainCategory || !assetName || !assetUpdateDate || !type) {
+    if (!name || !company || !department || !mainCategory) {
       alert("Please fill in all fields before generating the QR code.");
       return;
     }
+  
+    let qrDataArray = [];
+  
+    if (computerComponents === "fullSet") {
+      const items = [
+        { asset: CPUassetName, serial: CPUserialNumber, label: "CPU" },
+        { asset: MoniterassetName, serial: MoniterserialNumber, label: "Monitor" },
+        { asset: MouseassetName, serial: MouseserialNumber, label: "Mouse" },
+        { asset: KeyboardassetName, serial: KeyboardserialNumber, label: "Keyboard" }
+      ];
+  
+      items.forEach((item) => {
+        if (item.asset) {
+          const id = generateTrackingId(item.serial); // Generate a unique tracking ID
+          const qrData = JSON.stringify({
+            name,
+            company,
+            department,
+            mainCategory,
+            assetName: item.asset,
+            type,
+            assetUpdateDate,
+            serialNumber: item.serial,
+            trackingId: id,
+            component: item.label,
+            specialNote,
+          });
+  
+          qrDataArray.push({ qrData, trackingId: id, component: item.label });
+        }
+      });
+  
+    } else {
+      // Normal QR generation
+      const id = generateTrackingId(serialNumber);
+      const qrData = JSON.stringify({
+        name,
+        company,
+        department,
+        mainCategory,
+        assetName,
+        type,
+        assetUpdateDate,
+        serialNumber,
+        trackingId: id,
+       
+        specialNote,
+      });
+  
+      qrDataArray.push({ qrData, trackingId: id});
+    }
+  
+    setQrCodeData(qrDataArray);
+  };
+  
 
-    if (mainCategory === "Electronic items" && !serialNumber) {
+  /*const handleGenerateQR = () => {
+    if (!name || !company || !department || !mainCategory /*|| !assetName || !assetUpdateDate || !type || !CPUassetName || !MoniterassetName || !MouseassetName || !KeyboardassetName) {
+     /* alert("Please fill in all fields before generating the QR code.");
+      return;
+    }
+
+    /*if (mainCategory === "Electronic items" && !serialNumber) {
       alert("Please enter a Serial Number for Electronics.");
       return;
     }
 
     setTrackingId(generateTrackingId());
   };
-
+*/
   useEffect(() => {
     if (trackingId) {
       const qrData = JSON.stringify({
@@ -118,10 +188,14 @@ const AssetRegister = () => {
         department,
         mainCategory,
         assetName,
+        CPUassetName, 
+        MoniterassetName, 
+        MouseassetName,
+        KeyboardassetName,
         type: type === "Other" ? customType : type,
         assetUpdateDate,
         serialNumber: mainCategory === "Electronic items" ? serialNumber : null,
-        trackingId,
+        trackingId ,
         computerComponents,
         specialNote,
       });
@@ -143,8 +217,8 @@ const AssetRegister = () => {
     }
   };
 
-  const handleSubmit = async () => {
-    if (!name || !company || !department || !mainCategory || !assetName || !assetUpdateDate || !type) {
+ /* const handleSubmit = async () => {
+    /*if (!name || !company || !department || !mainCategory || !assetName || !CPUassetName || !MoniterassetName || !MouseassetName  || !KeyboardassetName || !assetUpdateDate || !type) {
       alert("Please fill in all fields before submitting.");
       return;
     }
@@ -157,6 +231,10 @@ const AssetRegister = () => {
         mainCategory,
         type: type === "Other" ? customType : type,
         assetName,
+        CPUassetName, 
+        MoniterassetName, 
+        MouseassetName,
+        KeyboardassetName,
         assetUpdateDate,
         serialNumber: mainCategory === "Electronic items" ? serialNumber : null,
         trackingId,
@@ -172,19 +250,111 @@ const AssetRegister = () => {
       setMainCategory("");
       setType("");
       setAssetName("");
+      setCPUAssetName("");
+  setMoniterAssetName("");
+   setMouseAssetName("");
+  setKeyboardAssetName("");
       setAssetUpdateDate("");
       setSerialNumber("");
       setQrCodeData(null);
       setTrackingId("");
       setSpecialNote("");
       setCustomType("");
-      setComputerComponents(/*{ fullPack: false, monitor: false, cpu: false, mouse: false, keyboard: false }*/"");
+      setComputerComponents(/*{ fullPack: false, monitor: false, cpu: false, mouse: false, keyboard: false }"");
+    } catch (error) {
+      console.error("Error submitting data:", error);
+      alert("Error creating asset. Please try again.");
+    }
+  };*/
+
+
+  const handleSubmit = async () => {
+    if (!name || !company || !department || !mainCategory || !assetUpdateDate || !type) {
+      alert("Please fill in all required fields before submitting.");
+      return;
+    }
+  
+    try {
+      if (computerComponents === "fullSet") {
+        const components = [
+          { assetName: CPUassetName, serialNumber: CPUserialNumber, label: "CPU" },
+          { assetName: MoniterassetName, serialNumber: MoniterserialNumber, label: "Monitor" },
+          { assetName: MouseassetName, serialNumber: MouseserialNumber, label: "Mouse" },
+          { assetName: KeyboardassetName, serialNumber: KeyboardserialNumber, label: "Keyboard" },
+        ];
+  
+        for (const component of components) {
+          if (component.assetName) {
+            //const trackingId = generateTrackingId(); // Generate unique ID for each
+            const id = generateTrackingId(component.serialNumber);
+            const assetData = {
+              name,
+              company,
+              department,
+              mainCategory,
+              type: type === "Other" ? customType : type,
+              assetName: component.assetName,
+              assetUpdateDate,
+              serialNumber: component.serialNumber || null,
+              trackingId: id,
+              specialNote,
+              computerComponents: component.label, // Label component type
+            };
+  
+            const response = await axios.post("http://localhost:8000/api/AssetRegisterDetails", assetData);
+            console.log(`Submitted ${component.label}:`, response.data);
+          }
+        }
+      } else {
+        // Single asset submission
+        const id = generateTrackingId(serialNumber);
+        const assetData = {
+         
+          name,
+          company,
+          department,
+          mainCategory,
+          type: type === "Other" ? customType : type,
+          assetName,
+          assetUpdateDate,
+          serialNumber: mainCategory === "Electronic items" ? serialNumber : null,
+          trackingId: id,
+          specialNote,
+          computerComponents,
+        };
+  
+        const response = await axios.post("http://localhost:8000/api/AssetRegisterDetails", assetData);
+        console.log("Submitted single asset:", response.data);
+      }
+  
+      alert("Assets submitted successfully!");
+      resetForm();
     } catch (error) {
       console.error("Error submitting data:", error);
       alert("Error creating asset. Please try again.");
     }
   };
-
+  
+  // Function to reset form after submission
+  const resetForm = () => {
+    setCompany("");
+    setDepartment("");
+    setMainCategory("");
+    setType("");
+    setAssetName("");
+    setCPUAssetName("");
+    setMoniterAssetName("");
+    setMouseAssetName("");
+    setKeyboardAssetName("");
+    setAssetUpdateDate("");
+    setSerialNumber("");
+    setQrCodeData(null);
+    setTrackingId("");
+    setSpecialNote("");
+    setCustomType("");
+    setComputerComponents("");
+  };
+  
 
 
 
@@ -264,16 +434,92 @@ const AssetRegister = () => {
       <div className="fullset-components">
         <label className="l">
           <input type="checkbox" checked readOnly /> CPU
+          <input
+            type="text"
+            value={CPUassetName}
+            onChange={(e) => setCPUAssetName(e.target.value)}
+            placeholder="Enter Asset Name"
+          />
+          
+          <input
+              type="text"
+              value={CPUserialNumber}
+              onChange={(e) => setCPUSerialNumber(e.target.value)}
+              placeholder="Enter Serial Number"
+            />
         </label>
+        <div className="button-group">
+            <button className="button generate-btn" onClick={handleGenerateQR}>Generate QR</button>
+
+          </div>
+          
+
+
+
+
         <label className="l">
-          <input type="checkbox" checked readOnly /> Monitor
+          <input type="checkbox" checked readOnly /> Monitor<input
+            type="text"
+            value={MoniterassetName}
+            onChange={(e) => setMoniterAssetName(e.target.value)}
+            placeholder="Enter Asset Name"
+          />
+          <input
+              type="text"
+              value={MoniterserialNumber}
+              onChange={(e) => setMoniterSerialNumber(e.target.value)}
+              placeholder="Enter Serial Number"
+            />
         </label>
+        <div className="button-group">
+            <button className="button generate-btn" onClick={handleGenerateQR}>Generate QR</button>
+          </div>
+
+
+
+
+
+
         <label className="l">
-          <input type="checkbox" checked readOnly /> Mouse
-        </label>
+          <input type="checkbox" checked readOnly /> Mouse <input
+            type="text"
+            value={MouseassetName}
+            onChange={(e) => setMouseAssetName(e.target.value)}
+            placeholder="Enter Asset Name"
+          />
+          <input
+              type="text"
+              value={MouseserialNumber}
+              onChange={(e) => setMouseSerialNumber(e.target.value)}
+              placeholder="Enter Serial Number"
+            />
+        </label><div className="button-group">
+            <button className="button generate-btn" onClick={handleGenerateQR}>Generate QR</button>
+          </div>
+
+
+
+
+
+
+
         <label className="l">
-          <input type="checkbox" checked readOnly /> Keyboard
+          <input type="checkbox" checked readOnly /> Keyboard <input
+            type="text"
+            value={KeyboardassetName}
+            onChange={(e) => setKeyboardAssetName(e.target.value)}
+            placeholder="Enter Asset Name"
+          />
+          <input
+              type="text"
+              value={KeyboardserialNumber}
+              onChange={(e) => setKeyboardSerialNumber(e.target.value)}
+              placeholder="Enter Serial Number"
+            />
         </label>
+        <div className="button-group">
+            <button className="button generate-btn" onClick={handleGenerateQR}>Generate QR</button>
+          </div>
       </div>
     )}
 
@@ -295,15 +541,15 @@ const AssetRegister = () => {
   </div>
 )}
 
-
+{computerComponents != "fullSet" && (
           <input
             type="text"
             value={assetName}
             onChange={(e) => setAssetName(e.target.value)}
             placeholder="Enter Asset Name"
           />
-
-          {mainCategory === "Electronic items" && (
+)}
+          {mainCategory === "Electronic items" && computerComponents != "fullSet" &&  (
             <input
               type="text"
               value={serialNumber}
@@ -324,31 +570,35 @@ const AssetRegister = () => {
   placeholder="Enter Special Note (Optional)"
 />
 
-
+{computerComponents != "fullSet" &&(
           <div className="button-group">
             <button className="button generate-btn" onClick={handleGenerateQR}>Generate QR</button>
-          </div>
+          </div>)}
 
-          {trackingId && qrCodeData && (
-            <div className="qr-container">
-              <h3>Generated QR Code</h3>
-              <div ref={qrCodeContainerRef} className="combined-qr-container">
-                <QRCode
-                  value={qrCodeData}
-                  size={200} 
-                  qrStyle="squares"
-                  logoImage="https://via.placeholder.com/30"
-                  logoWidth={50}
-                   
-                />
-                <p>ID: {trackingId}</p>
-              </div>
+          {qrCodeData && qrCodeData.length > 0 && (
+  <div className="qr-container">
+    <h3>Generated QR Codes</h3>
+    {qrCodeData.map((item, index) => (
+      <div key={index} ref={qrCodeContainerRef} className="combined-qr-container">
+        <h4>{item.component}</h4>
+        <QRCode
+          value={item.qrData}
+          size={200}
+          qrStyle="squares"
+          logoImage="https://via.placeholder.com/30"
+          logoWidth={50}
+        />
+        <p>ID: {item.trackingId}</p>
+      </div>
+    ))}
+    <button className="button2 download-btn" onClick={handleDownloadCombinedImage}>
+      Download All <i className="fas fa-download"></i>
+    </button>
+    <button className="button3" onClick={handleSubmit}>Submit</button>
+  </div>
+)}
 
-              <button className="button2 download-btn" onClick={handleDownloadCombinedImage}>
-                Download <i className="fas fa-download"></i>
-              </button>
-            </div>
-          )}
+          
 
           {trackingId && qrCodeData && (
             <button className="button3" onClick={handleSubmit}>Submit</button>
